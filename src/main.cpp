@@ -1,24 +1,42 @@
 #include <Arduino.h>
+#include "pins.h"
+#include "secret.h"
+#include "logger.h"
 
 unsigned long timer = 0;
 
 void setup() {
-    pinMode(13, OUTPUT);
+    Serial.begin(115200);
+    delay(500);
+
+    pinMode(LED_PIN, OUTPUT);
+
+    log(INFO, "System gestartet");
+    log(INFO, "WLAN SSID", WIFI_SSID);
 }
 
 void loop() {
 
-    if (millis() - timer > 500) {
-        digitalWrite(13, HIGH);
-    }
+    unsigned long currentMillis = millis();
 
-    if (millis() - timer > 1000) {
-        digitalWrite(13, LOW);
-        timer = millis();
-    }
-
-    // Schutz gegen Overflow (optional aber sauber)
-    if (timer > millis()) {
+    // ===== Overflow-Schutz (optional) =====
+    if (currentMillis < timer) {
+        log(WARN, "millis Overflow erkannt");
         timer = 0;
+    }
+
+    // ===== LED EIN nach 500 ms =====
+    if (currentMillis - timer > 500) {
+        digitalWrite(LED_PIN, HIGH);
+    }
+
+    // ===== LED AUS nach 1000 ms =====
+    if (currentMillis - timer > 1000) {
+
+        digitalWrite(LED_PIN, LOW);
+
+        log(SUCCESS, "LED AUS bei millis", currentMillis);
+
+        timer = currentMillis;
     }
 }
