@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "pins.h"
 #include "secret.h"
-#include "logger.h"
+#include "./Debug/logger.h"
 
 unsigned long timer = 0;
 
@@ -35,7 +35,14 @@ void loop() {
 
         digitalWrite(LED_PIN, LOW);
 
-        log(SUCCESS, "LED AUS bei millis", currentMillis);
+        log(SUCCESS, "SUCCESS", currentMillis);
+        log(INFO, "INFO", 1);
+        log(WARN, "WARN", 1);
+        log(ERROR, "ERROR", 1);
+        log(DEBUG, "DEBUG", 1);
+
+
+
 
         timer = currentMillis;
     }
