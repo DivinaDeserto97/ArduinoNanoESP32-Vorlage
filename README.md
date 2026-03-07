@@ -1,120 +1,196 @@
-# 📦 Arduino Nano ESP32 -- Projektvorlage
+# 📦 Arduino Nano ESP32 -- Projektvorlage (IoT Basis)
 
 ## 📌 Ziel dieser Vorlage
 
-Diese Projektbasis soll:
+Diese Projektbasis dient als **saubere und wiederverwendbare Grundlage
+für IoT‑Firmware** auf dem Arduino Nano ESP32.
 
--   sauber strukturiert sein\
--   leicht erweiterbar sein\
--   für jedes neue IoT-Projekt kopiert werden können\
--   langfristig als Standard-Grundlage dienen
+Die Struktur ist so aufgebaut, dass Projekte:
 
-------------------------------------------------------------------------
+-   sauber strukturiert bleiben
+-   modular erweitert werden können
+-   mehrfach kopiert werden können
+-   langfristig als persönliche **Standard‑Firmwarebasis** dienen
 
-## 🔧 Hardware
+Ziel ist eine **robuste IoT‑Grundarchitektur** mit:
 
--   Board: Arduino Nano ESP32
--   USB-C Verbindung\
--   WLAN & Bluetooth integriert\
--   3.3V Logik\
--   ESP32-S3 Chip
-
-------------------------------------------------------------------------
-
-## 📁 Projektstruktur
-
-``` bash
-ArduinoNanoESP32Vorlage/
-│
-├── src/
-│   └── main.cpp
-│
-├── include/
-│   └── config.h
-│
-├── data/                # optional (LittleFS / SPIFFS)
-│
-├── platformio.ini
-├── .env.example
-└── README.md
-```
+-   WLAN
+-   Webserver
+-   JSON API
+-   Zeitverwaltung
+-   Geräteidentifikation
+-   Debug‑Logging
 
 ------------------------------------------------------------------------
 
-## ⚙️ Entwicklungsumgebung
+# 🔧 Hardware
 
-Empfohlen:
+Board: **Arduino Nano ESP32**
 
--   Visual Studio Code\
--   PlatformIO Extension
-
-Alternativ:
-
--   Arduino IDE
-
-------------------------------------------------------------------------
-
-## 🧠 Grundkonzept dieser Vorlage
-
-Diese Vorlage ist gedacht für:
-
--   WLAN-fähige IoT Projekte\
--   HTTP Server (GET / POST)\
--   Sensor-Module\
--   Display-Module\
--   SD-Karten Logging\
--   Steuerung über REST-API
-
-Ziel:\
-Saubere, wiederverwendbare Struktur für jedes neue Projekt.
+  Eigenschaft   Beschreibung
+  ------------- -----------------------
+  MCU           ESP32‑S3
+  Logik         3.3V
+  USB           USB‑C
+  Netzwerk      WLAN + Bluetooth
+  Flash         je nach Boardvariante
 
 ------------------------------------------------------------------------
 
-## 🌐 WLAN Konfiguration
+# 📁 Projektstruktur
 
-Beispiel `secret.h`:
-
-``` bash
-WIFI_SSID=DeinWLAN
-WIFI_PASSWORD=DeinPasswort
-
-LED_ON_MS=500
-LED_OFF_MS=500
-```
-
-Im Code werden die Werte über `build_flags` eingebunden.
+    ArduinoNanoESP32/
+    │
+    ├── include/
+    │   ├── pins.h              # zentrale Pin Definitionen
+    │   ├── secretVorlage.h     # Vorlage der secret Version one daten
+    │   └── secret.h            # WLAN + Geräte ID
+    │
+    ├── src/
+    │
+    │   ├── Debug/
+    │   │   └── logger.h        # Debug Logging System
+    │
+    │   ├── ESP32/
+    │   │
+    │   │   ├── config/
+    │   │   │   └── device_config.h
+    │   │   │
+    │   │   ├── wifi/
+    │   │   │   ├── wifi_manager.h
+    │   │   │   └── wifi_manager.cpp
+    │   │   │
+    │   │   ├── time/
+    │   │   │   ├── uhr.h
+    │   │   │   └── uhr.cpp
+    │   │   │
+    │   │   ├── web/
+    │   │   │   ├── router.h
+    │   │   │   ├── router.cpp
+    │   │   │   └── status_page.h
+    │   │   │
+    │   │   ├── controller/
+    │   │   │   ├── controller.h
+    │   │   │   └── controller.cpp
+    │   │   │
+    │   │   └── main.cpp        # Startpunkt der Firmware
+    │
+    ├── data/                   # optional: LittleFS / SPIFFS
+    │
+    ├── platformio.ini
+    └── README.md
 
 ------------------------------------------------------------------------
 
-## 🚀 Beispiel: Minimaler Startcode
+# 🧠 Architektur‑Idee
 
-``` cpp
-#include <Arduino.h>
+Die Firmware ist in **Module aufgeteilt**:
 
-void setup() {
-    Serial.begin(115200);
-    delay(1000);
-    Serial.println("System gestartet.");
-}
+  Modul        Aufgabe
+  ------------ ----------------------
+  Debug        Logging System
+  wifi         WLAN Verbindung
+  time         Zeitverwaltung + NTP
+  web          HTTP Server
+  controller   API Datenlogik
+  config       Gerätekonfiguration
+  include      Hardware & Secrets
+  main         Firmware Startpunkt
 
-void loop() {
-    delay(1000);
-}
-```
-
-------------------------------------------------------------------------
-
-## 🌍 Beispiel: HTTP GET Endpoint
-
-``` cpp
-server.on("/status", HTTP_GET, []() {
-    server.send(200, "application/json", "{"status":"online"}");
-});
-```
+Diese Struktur verhindert **spaghetti code** und erlaubt später einfache
+Erweiterungen.
 
 ------------------------------------------------------------------------
 
-## 🔌 Wichtige Pins
+# ⏱ Zeitarchitektur (millis + echte Zeit)
+
+Ein wichtiger Teil dieser Vorlage ist die **Zeit‑Verknüpfung zwischen
+`millis()` und echter Uhrzeit**.
+
+Beim ersten erfolgreichen NTP Sync wird gespeichert:
+
+    bootEpoch  = echte Zeit (Unix Zeit)
+    bootMillis = millis() zum gleichen Zeitpunkt
+
+Damit kann jede gespeicherte `millis` Zeit später berechnet werden:
+
+    eventEpoch = bootEpoch + (eventMillis - bootMillis) / 1000
+
+Vorteile:
+
+-   nur `millis()` speichern
+-   wenig RAM
+-   wenig Flash
+-   auch ohne RTC möglich
+
+Beispiel:
+
+    unsigned long buttonPress = millis();
+    Serial.println(millisToTimeString(buttonPress));
+
+------------------------------------------------------------------------
+
+# 🌐 Webserver
+
+Der ESP32 startet einen kleinen HTTP Server.
+
+  Route       Beschreibung
+  ----------- -------------------------
+  `/`         schöne HTML Statusseite
+  `/status`   JSON API
+
+### Beispiel JSON
+
+    {
+     "device_id":"00/ArduinoNanoESP32",
+     "boot_time":"07.03.2026 12:33:36",
+     "current_time":"07.03.2026 12:36:12",
+     "uptime_ms":185000,
+     "wifi":{
+      "connected":true,
+      "ip":"192.168.50.11",
+      "rssi":-67
+     },
+     "system":{
+      "heap":278584,
+      "cpu_mhz":240
+     }
+    }
+
+------------------------------------------------------------------------
+
+# 🖥 Statusseite
+
+Die Startseite zeigt eine kleine **Geräte‑Dashboardseite**:
+
+-   Device ID
+-   Boot Zeit
+-   aktuelle Zeit
+-   Uptime
+-   WLAN Status
+-   Signalstärke
+-   Heap Speicher
+
+------------------------------------------------------------------------
+
+# 📡 WLAN Konfiguration
+
+Datei:
+
+    include/secret.h
+
+Beispiel:
+
+    #define DEVICE_ID "00/ArduinoNanoESP32"
+
+    #define WIFI_SSID "DeinWLAN"
+    #define WIFI_PASSWORD "DeinPasswort"
+
+Diese Datei sollte **nicht ins Git Repository**.
+
+------------------------------------------------------------------------
+
+# 🔌 Wichtige Pins
 
   Funktion   Pin
   ---------- -----
@@ -125,31 +201,23 @@ server.on("/status", HTTP_GET, []() {
   SPI MISO   12
   SPI SCK    13
 
-(Pins je nach Projekt prüfen!)
+Pins können je nach Boardvariante abweichen.
 
 ------------------------------------------------------------------------
 
-## 📡 Typische Erweiterungen
+# 📡 Typische Erweiterungen
 
--   DHT11 / DHT22\
--   OLED Display (I2C)\
--   Relais Modul\
--   SD-Karten Modul\
--   Web Dashboard\
--   JSON API\
+Diese Architektur ist vorbereitet für:
+
+-   Sensoren
+-   Relaissteuerung
+-   Web Dashboard
+-   REST API
+-   Datenlogging
+-   MQTT
 -   OTA Updates
 
-------------------------------------------------------------------------
-
-## 🔐 Sicherheit
-
--   Keine echten WLAN Daten committen\
--   `.env` oder `secret.h` in `.gitignore` eintragen\
--   API bei Bedarf mit Passwort schützen
-
-------------------------------------------------------------------------
-
-## 🧩 Erweiterbare Module (Idee)
+Beispiel API Erweiterungen:
 
     /status
     /on
@@ -160,16 +228,35 @@ server.on("/status", HTTP_GET, []() {
 
 ------------------------------------------------------------------------
 
-## 🛠 Upload
+# 🔐 Sicherheit
 
-PlatformIO:
+Empfehlungen:
 
-``` bash
-pio run --target upload
-```
+-   `secret.h` in `.gitignore`
+-   API optional mit Token schützen
+-   getrennte Gäste‑WLAN Geräte
 
-Monitor:
+------------------------------------------------------------------------
 
-``` bash
-pio device monitor
-```
+# 🛠 Upload
+
+Firmware flashen:
+
+    pio run --target upload
+
+Serial Monitor:
+
+    pio device monitor
+
+------------------------------------------------------------------------
+
+# 🚀 Ziel dieser Vorlage
+
+Diese Vorlage soll langfristig eine **universelle ESP32‑Firmwarebasis**
+sein.
+
+Neue Projekte starten dann einfach mit:
+
+    cp -r ArduinoNanoESP32Vorlage NeuesProjekt
+
+und können sofort erweitert werden.
