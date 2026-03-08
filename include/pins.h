@@ -12,13 +12,11 @@
 // Relay Ausgang auf D2
 #define RELAY_PIN 2
 
-// I2C Pins
-#define I2C_SDA 8
-#define I2C_SCL 9
-
-// SPI Pins
-#define SPI_MOSI 10
-#define SPI_MISO 11
-#define SPI_SCK 12
+// mikroSD
+#define SD_CD 8
+#define SD_CS 9
+#define SD_DI 10
+#define SD_DO 11
+#define SD_CLK 12
 
 #endif
