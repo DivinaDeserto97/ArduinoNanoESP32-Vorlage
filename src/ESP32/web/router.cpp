@@ -7,6 +7,7 @@
 
 #include <WebServer.h>
 
+#include "../../../include/system_state.h"
 #include "../../Debug/logger.h"
 #include "../controller/controller.h"
 #include "../config/device_config.h"
@@ -26,6 +27,13 @@ void handleStatus()
     server.send(200, "application/json; charset=utf-8", buildStatusJson());
 }
 
+// relay test route
+void handleRelayPulse()
+{
+    relayPulseRequest = true;
+    server.send(200, "text/plain; charset=utf-8", "Relay Puls angefordert");
+}
+
 // unbekannte Route
 void handleNotFound()
 {
@@ -37,6 +45,7 @@ void initRouter()
 {
     server.on("/", handleRoot);
     server.on(STATUS_ROUTE, handleStatus);
+    server.on("/relay/pulse", handleRelayPulse);
     server.onNotFound(handleNotFound);
 
     server.begin();
@@ -44,6 +53,7 @@ void initRouter()
     log(SUCCESS, "Webserver gestartet");
     log(INFO, "HTML", "/");
     log(INFO, "JSON", STATUS_ROUTE);
+    log(INFO, "Relay Puls", "/relay/pulse");
 }
 
 // verarbeitet requests

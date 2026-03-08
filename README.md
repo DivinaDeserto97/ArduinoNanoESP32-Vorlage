@@ -44,7 +44,8 @@ Board: **Arduino Nano ESP32**
     ├── include/
     │   ├── pins.h              # zentrale Pin Definitionen
     │   ├── secretVorlage.h     # Vorlage der secret Version one daten
-    │   └── secret.h            # WLAN + Geräte ID
+    │   ├── secret.h            # WLAN + Geräte ID
+    │   └── system_state.h      # Systemweite Variablen
     │
     ├── src/
     │

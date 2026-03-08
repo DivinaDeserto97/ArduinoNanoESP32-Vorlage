@@ -1,35 +1,37 @@
 // ============================================================
 // MAIN PROGRAM
-// startet System und führt Hauptloop aus
+// startet das System und ruft alle Module im loop auf
 // ============================================================
 
 #include <Arduino.h>
 
 #include "pins.h"
 #include "secret.h"
+#include "system_state.h"
 
 #include "../src/Debug/logger.h"
 
 #include "../src/ESP32/config/device_config.h"
-#include "../src/ESP32/wifi/wifi_manager.h"
+#include "../src/ESP32/on_light/on_light.h"
 #include "../src/ESP32/time/uhr.h"
 #include "../src/ESP32/web/router.h"
+#include "../src/ESP32/wifi/wifi_manager.h"
+#include "../src/relay/relay.h"
 
-// speichert Zeit für LED Zyklus
-unsigned long timer = 0;
-
-// Beispiel Event Zeit in millis
+// speichert ein Demo Event für die Zeitumrechnung
 unsigned long demoEventMillis = 0;
 
 void setup()
 {
-    // startet serielle Ausgabe
+    // startet die serielle Ausgabe
     Serial.begin(115200);
     delay(500);
 
-    // setzt LED Pin als Ausgang
-    pinMode(LED_PIN, OUTPUT);
-    digitalWrite(LED_PIN, LOW);
+    // startet die blinkende Status LED
+    initOnLight();
+
+    // startet den Relay Ausgang
+    initRelay();
 
     log(INFO, "System gestartet");
     log(INFO, "Device ID", DEVICE_ID);
@@ -38,16 +40,16 @@ void setup()
     // verbindet WLAN
     initWifi();
 
-    // synchronisiert Zeit und speichert Zeitanker
+    // synchronisiert die Zeit
     initClock();
 
-    // startet Webserver
+    // startet den Webserver
     initRouter();
 
-    // speichert einmal einen Demo Zeitpunkt in millis
+    // speichert einmal einen Demo Zeitpunkt
     demoEventMillis = millis();
 
-    // zeigt dazu die echte Uhrzeit
+    // zeigt die umgerechnete echte Zeit
     log(INFO, "Demo Event millis", demoEventMillis);
     log(INFO, "Demo Event Zeit", millisToTimeString(demoEventMillis));
 }
@@ -60,35 +62,9 @@ void loop()
     // prüft WLAN Verbindung
     updateWifi();
 
-    unsigned long currentMillis = millis();
+    // verarbeitet blinkende Status LED
+    updateOnLight();
 
-    // erkennt millis overflow
-    if (currentMillis < timer)
-    {
-        log(WARN, "millis overflow");
-        timer = 0;
-    }
-
-    // LED einschalten
-    if (currentMillis - timer > LED_ON_TIME_MS)
-    {
-        digitalWrite(LED_PIN, HIGH);
-    }
-
-    // LED ausschalten
-    if (currentMillis - timer > LED_OFF_TIME_MS)
-    {
-        digitalWrite(LED_PIN, LOW);
-
-        log(SUCCESS, "SUCCESS", currentMillis);
-        log(INFO, "INFO", 1);
-        log(WARN, "WARN", 1);
-        log(ERROR, "ERROR", 1);
-        log(DEBUG, "DEBUG", 1);
-
-        // Beispiel: aktuelle millis Zeit in echte Uhrzeit umrechnen
-        log(INFO, "Jetzt als Zeit", millisToTimeString(currentMillis));
-
-        timer = currentMillis;
-    }
+    // verarbeitet Relay Trigger
+    updateRelay();
 }
