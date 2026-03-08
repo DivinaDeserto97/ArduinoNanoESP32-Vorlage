@@ -11,6 +11,7 @@
 
 #include "../time/uhr.h"
 #include "../wifi/wifi_manager.h"
+#include "../../micro_sd/micro_sd.h"
 #include "../../../include/secret.h"
 
 // formatiert Sekunden als lesbare Uptime
@@ -32,6 +33,21 @@ inline String buildStatusPage()
 {
     String html = "";
 
+    bool sdReady = isMicroSDReady();
+    bool sdInserted = isMicroSDInserted();
+    bool testFileExists = false;
+    String testFileContent = "";
+
+    if (sdReady)
+    {
+        testFileExists = fileExists("/test.txt");
+
+        if (testFileExists)
+        {
+            testFileContent = readTextFile("/test.txt");
+        }
+    }
+
     html += "<!DOCTYPE html>";
     html += "<html lang='de'>";
     html += "<head>";
@@ -41,9 +57,9 @@ inline String buildStatusPage()
 
     html += "<style>";
     html += "body{margin:0;padding:24px;background:#0f1115;color:#e8eaed;font-family:Arial,sans-serif;}";
-    html += ".wrap{max-width:900px;margin:0 auto;}";
+    html += ".wrap{max-width:1000px;margin:0 auto;}";
     html += "h1{margin:0 0 20px 0;color:#7cc7ff;}";
-    html += ".grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}";
+    html += ".grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}";
     html += ".box{background:#171b22;border:1px solid #2a313d;border-radius:12px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,0.25);}";
     html += ".title{font-size:18px;font-weight:bold;color:#7cc7ff;margin-bottom:12px;}";
     html += ".row{margin:8px 0;}";
@@ -51,6 +67,8 @@ inline String buildStatusPage()
     html += ".ok{color:#64d98b;font-weight:bold;}";
     html += ".bad{color:#ff7d7d;font-weight:bold;}";
     html += ".small{margin-top:20px;color:#91a0b3;font-size:13px;}";
+    html += ".full{margin-top:16px;}";
+    html += ".content{white-space:pre-wrap;background:#0f1115;border:1px solid #2a313d;border-radius:10px;padding:12px;}";
     html += "a{color:#7cc7ff;text-decoration:none;}";
     html += "</style>";
 
@@ -90,9 +108,41 @@ inline String buildStatusPage()
     html += "<div class='row'><span class='label'>Millis:</span> " + String(millis()) + "</div>";
     html += "</div>";
 
+    // microSD
+    html += "<div class='box'>";
+    html += "<div class='title'>microSD</div>";
+
+    html += "<div class='row'><span class='label'>Karte steckt:</span> ";
+    html += sdInserted ? "<span class='ok'>Ja</span>" : "<span class='bad'>Nein</span>";
     html += "</div>";
 
-    html += "<div class='small'>JSON API: <a href='/status'>/status</a></div>";
+    html += "<div class='row'><span class='label'>SD bereit:</span> ";
+    html += sdReady ? "<span class='ok'>Ja</span>" : "<span class='bad'>Nein</span>";
+    html += "</div>";
+
+    html += "<div class='row'><span class='label'>test.txt:</span> ";
+    html += testFileExists ? "<span class='ok'>vorhanden</span>" : "<span class='bad'>nicht gefunden</span>";
+    html += "</div>";
+
+    if (sdReady && testFileExists)
+    {
+        html += "<div class='row'><span class='label'>Groesse:</span> " + String((unsigned long)getFileSize("/test.txt")) + " bytes</div>";
+    }
+
+    html += "</div>";
+
+    html += "</div>";
+
+    // Dateiinhalt gross anzeigen
+    if (sdReady && testFileExists)
+    {
+        html += "<div class='box full'>";
+        html += "<div class='title'>Inhalt von /test.txt</div>";
+        html += "<div class='content'>" + testFileContent + "</div>";
+        html += "</div>";
+    }
+
+    html += "<div class='small'>JSON API: <a href='/status'>/status</a> | Relay Test: <a href='/relay/pulse'>/relay/pulse</a></div>";
 
     html += "</div>";
     html += "</body>";

@@ -12,7 +12,14 @@
 // Relay Ausgang auf D2
 #define RELAY_PIN 2
 
-// mikroSD
+// ------------------------------------------------------------
+// microSD
+// CD = Card Detect
+// CS = Chip Select
+// DI = Daten zum Modul
+// DO = Daten vom Modul
+// CLK = SPI Takt
+// ------------------------------------------------------------
 #define SD_CD 8
 #define SD_CS 9
 #define SD_DI 10

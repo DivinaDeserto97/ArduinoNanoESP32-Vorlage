@@ -17,6 +17,7 @@
 #include "../src/ESP32/web/router.h"
 #include "../src/ESP32/wifi/wifi_manager.h"
 #include "../src/relay/relay.h"
+#include "./micro_sd/micro_sd.h"
 
 // speichert ein Demo Event für die Zeitumrechnung
 unsigned long demoEventMillis = 0;
@@ -32,6 +33,22 @@ void setup()
 
     // startet den Relay Ausgang
     initRelay();
+
+    // startet die micro SD Karte
+    initMicroSD();
+
+    // Test: Datei neu schreiben
+    writeTextFile("/test.txt", "Hallo von der micro SD\n");
+
+    // Test: Text anhaengen
+    appendTextFile("/test.txt", "Noch eine Zeile\n");
+
+    // Test: Datei lesen
+    String sdText = readTextFile("/test.txt");
+    log(INFO, "SD Inhalt", sdText);
+
+    // Test: Dateiliste anzeigen
+    listMicroSDDir("/", 1);
 
     log(INFO, "System gestartet");
     log(INFO, "Device ID", DEVICE_ID);
