@@ -16,7 +16,7 @@
 #define STATUS_ROUTE "/status"
 
 // LED Zeiten
-#define LED_ON_TIME_MS 200
+#define LED_ON_TIME_MS 100
 #define LED_OFF_TIME_MS 400
 
 // WLAN Überprüfung Intervall

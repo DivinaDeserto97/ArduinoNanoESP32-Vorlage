@@ -11,6 +11,7 @@
 
 #include "../time/uhr.h"
 #include "../wifi/wifi_manager.h"
+#include "../config/device_config.h"
 #include "../../micro_sd/micro_sd.h"
 #include "../../../include/secret.h"
 
@@ -63,7 +64,7 @@ inline String buildStatusPage()
     html += ".box{background:#171b22;border:1px solid #2a313d;border-radius:12px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,0.25);}";
     html += ".title{font-size:18px;font-weight:bold;color:#7cc7ff;margin-bottom:12px;}";
     html += ".row{margin:8px 0;}";
-    html += ".label{display:inline-block;min-width:110px;color:#a9b4c2;}";
+    html += ".label{display:inline-block;min-width:120px;color:#a9b4c2;}";
     html += ".ok{color:#64d98b;font-weight:bold;}";
     html += ".bad{color:#ff7d7d;font-weight:bold;}";
     html += ".small{margin-top:20px;color:#91a0b3;font-size:13px;}";
@@ -106,6 +107,9 @@ inline String buildStatusPage()
     html += "<div class='row'><span class='label'>Heap:</span> " + String(ESP.getFreeHeap()) + " bytes</div>";
     html += "<div class='row'><span class='label'>CPU:</span> " + String(getCpuFrequencyMhz()) + " MHz</div>";
     html += "<div class='row'><span class='label'>Millis:</span> " + String(millis()) + "</div>";
+    html += "<div class='row'><span class='label'>Web Port:</span> " + String(WEB_SERVER_PORT) + "</div>";
+    html += "<div class='row'><span class='label'>Serial:</span> 115200</div>";
+    html += "<div class='row'><span class='label'>Monitor:</span> pio device monitor -b 115200</div>";
     html += "</div>";
 
     // microSD
@@ -133,7 +137,6 @@ inline String buildStatusPage()
 
     html += "</div>";
 
-    // Dateiinhalt gross anzeigen
     if (sdReady && testFileExists)
     {
         html += "<div class='box full'>";

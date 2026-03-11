@@ -11,6 +11,6 @@
 // wenn true wird ein 0.5s Puls auf D2 ausgelöst
 // das relay modul setzt den wert danach wieder auf false
 // ------------------------------------------------------------
-extern bool relayPulseRequest;
+inline bool relayPulseRequest = false;
 
 #endif
