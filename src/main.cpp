@@ -18,6 +18,7 @@
 #include "../src/ESP32/wifi/wifi_manager.h"
 #include "../src/relay/relay.h"
 #include "./micro_sd/micro_sd.h"
+#include "./ESP32/ota/ota_manager.h"
 
 // speichert ein Demo Event für die Zeitumrechnung
 unsigned long demoEventMillis = 0;
@@ -63,6 +64,8 @@ void setup()
     // startet den Webserver
     initRouter();
 
+    initOTA();
+
     // speichert einmal einen Demo Zeitpunkt
     demoEventMillis = millis();
 
@@ -78,6 +81,8 @@ void loop()
 
     // prüft WLAN Verbindung
     updateWifi();
+
+    updateOTA();
 
     // verarbeitet blinkende Status LED
     updateOnLight();
