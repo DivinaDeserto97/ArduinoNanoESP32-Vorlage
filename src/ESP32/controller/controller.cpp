@@ -8,7 +8,8 @@
 #include <WiFi.h>
 #include <esp_system.h>
 
-#include "../../../include/secret.h"
+#include "../../../include/env.h"
+#include "../config/device_config.h"
 #include "../wifi/wifi_manager.h"
 #include "../time/uhr.h"
 
@@ -18,6 +19,7 @@ String buildStatusJson()
     String json = "{";
 
     json += "\"device_id\":\"" + String(DEVICE_ID) + "\",";
+    json += "\"device_name\":\"" + String(DEVICE_NAME) + "\",";
     json += "\"boot_time\":\"" + getBootTimeString() + "\",";
     json += "\"current_time\":\"" + getSwissTimeString() + "\",";
     json += "\"uptime_ms\":" + String(millis()) + ",";
@@ -34,7 +36,8 @@ String buildStatusJson()
 
     json += "\"system\":{";
     json += "\"heap\":" + String(ESP.getFreeHeap()) + ",";
-    json += "\"cpu_mhz\":" + String(getCpuFrequencyMhz());
+    json += "\"cpu_mhz\":" + String(getCpuFrequencyMhz()) + ",";
+    json += "\"web_port\":" + String(WEB_SERVER_PORT);
     json += "}";
 
     json += "}";

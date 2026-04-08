@@ -1,19 +1,19 @@
-#ifndef SECRET_H
-#define SECRET_H
+#ifndef ENV_H
+#define ENV_H
 
 // ============================================================
 // GERÄTE IDENTITÄT
 // eindeutige ID damit man mehrere ESP32 unterscheiden kann
 // ============================================================
 
-#define DEVICE_ID "00/ArduinoNanoESP32"   // Raum/Gerät
+#define DEVICE_ID "00/Gerät"   // ID/Gerät
 
 // ============================================================
 // WLAN ZUGANG
 // Zugangsdaten für dein WLAN
 // ============================================================
 
-#define WIFI_SSID     "RiffDesLebens"
-#define WIFI_PASSWORD "Eywa20WachtUeber25Uns!"
+#define WIFI_SSID     "DeinWlanName"
+#define WIFI_PASSWORD "DeinWlanPasswort"
 
 #endif

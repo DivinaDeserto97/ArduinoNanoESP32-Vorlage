@@ -23,7 +23,7 @@ bool isMicroSDInserted()
 {
     pinMode(SD_CD, INPUT_PULLUP);
 
-    // LOW = Karte erkannt
+    // HIGH = Karte erkannt
     return digitalRead(SD_CD) == HIGH;
 }
 

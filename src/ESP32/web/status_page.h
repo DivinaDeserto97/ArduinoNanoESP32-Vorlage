@@ -3,17 +3,17 @@
 
 // ============================================================
 // STATUS PAGE
-// erzeugt eine schöne HTML Statusseite
+// erzeugt eine HTML Statusseite
 // ============================================================
 
 #include <Arduino.h>
 #include <WiFi.h>
 
+#include "../../../include/env.h"
+#include "../config/device_config.h"
 #include "../time/uhr.h"
 #include "../wifi/wifi_manager.h"
-#include "../config/device_config.h"
 #include "../../micro_sd/micro_sd.h"
-#include "../../../include/secret.h"
 
 // formatiert Sekunden als lesbare Uptime
 inline String formatUptimePretty(unsigned long totalSeconds)
@@ -55,7 +55,6 @@ inline String buildStatusPage()
     html += "<meta charset='UTF-8'>";
     html += "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
     html += "<title>ESP32 Status</title>";
-
     html += "<style>";
     html += "body{margin:0;padding:24px;background:#0f1115;color:#e8eaed;font-family:Arial,sans-serif;}";
     html += ".wrap{max-width:1000px;margin:0 auto;}";
@@ -72,25 +71,22 @@ inline String buildStatusPage()
     html += ".content{white-space:pre-wrap;background:#0f1115;border:1px solid #2a313d;border-radius:10px;padding:12px;}";
     html += "a{color:#7cc7ff;text-decoration:none;}";
     html += "</style>";
-
     html += "</head>";
     html += "<body>";
     html += "<div class='wrap'>";
 
     html += "<h1>ESP32 STATUS</h1>";
-
     html += "<div class='grid'>";
 
-    // Gerät
     html += "<div class='box'>";
     html += "<div class='title'>Gerät</div>";
     html += "<div class='row'><span class='label'>Device ID:</span> " + String(DEVICE_ID) + "</div>";
+    html += "<div class='row'><span class='label'>Name:</span> " + String(DEVICE_NAME) + "</div>";
     html += "<div class='row'><span class='label'>Boot Zeit:</span> " + getBootTimeString() + "</div>";
     html += "<div class='row'><span class='label'>Jetzt:</span> " + getSwissTimeString() + "</div>";
     html += "<div class='row'><span class='label'>Uptime:</span> " + formatUptimePretty(getUptimeSeconds()) + "</div>";
     html += "</div>";
 
-    // WLAN
     html += "<div class='box'>";
     html += "<div class='title'>WLAN</div>";
     html += "<div class='row'><span class='label'>Verbunden:</span> ";
@@ -101,7 +97,6 @@ inline String buildStatusPage()
     html += "<div class='row'><span class='label'>Signal:</span> " + String(WiFi.RSSI()) + " dBm</div>";
     html += "</div>";
 
-    // System
     html += "<div class='box'>";
     html += "<div class='title'>System</div>";
     html += "<div class='row'><span class='label'>Heap:</span> " + String(ESP.getFreeHeap()) + " bytes</div>";
@@ -112,18 +107,14 @@ inline String buildStatusPage()
     html += "<div class='row'><span class='label'>Monitor:</span> pio device monitor -b 115200</div>";
     html += "</div>";
 
-    // microSD
     html += "<div class='box'>";
     html += "<div class='title'>microSD</div>";
-
     html += "<div class='row'><span class='label'>Karte steckt:</span> ";
     html += sdInserted ? "<span class='ok'>Ja</span>" : "<span class='bad'>Nein</span>";
     html += "</div>";
-
     html += "<div class='row'><span class='label'>SD bereit:</span> ";
     html += sdReady ? "<span class='ok'>Ja</span>" : "<span class='bad'>Nein</span>";
     html += "</div>";
-
     html += "<div class='row'><span class='label'>test.txt:</span> ";
     html += testFileExists ? "<span class='ok'>vorhanden</span>" : "<span class='bad'>nicht gefunden</span>";
     html += "</div>";
@@ -134,7 +125,6 @@ inline String buildStatusPage()
     }
 
     html += "</div>";
-
     html += "</div>";
 
     if (sdReady && testFileExists)
@@ -145,8 +135,7 @@ inline String buildStatusPage()
         html += "</div>";
     }
 
-    html += "<div class='small'>JSON API: <a href='/status'>/status</a> | Relay Test: <a href='/relay/pulse'>/relay/pulse</a></div>";
-
+    html += "<div class='small'>JSON API: <a href='/status'>/status</a></div>";
     html += "</div>";
     html += "</body>";
     html += "</html>";

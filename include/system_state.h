@@ -3,14 +3,10 @@
 
 // ============================================================
 // SYSTEM STATE
-// globale Trigger und Statusvariablen für das ganze Projekt
+// globale Statusvariablen für das Projekt
 // ============================================================
 
-// ------------------------------------------------------------
-// RELAY TRIGGER
-// wenn true wird ein 0.5s Puls auf D2 ausgelöst
-// das relay modul setzt den wert danach wieder auf false
-// ------------------------------------------------------------
-inline bool relayPulseRequest = false;
+// fuer Version 1 aktuell leer
+// spaeter koennen hier globale Trigger oder Statuswerte rein
 
 #endif

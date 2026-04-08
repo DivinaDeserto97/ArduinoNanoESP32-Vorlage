@@ -17,7 +17,7 @@
 
 // LED Zeiten
 #define LED_ON_TIME_MS 100
-#define LED_OFF_TIME_MS 400
+#define LED_OFF_TIME_MS 200
 
 // WLAN Überprüfung Intervall
 #define WIFI_CHECK_INTERVAL_MS 10000

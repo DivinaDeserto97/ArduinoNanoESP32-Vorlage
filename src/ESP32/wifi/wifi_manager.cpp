@@ -8,7 +8,7 @@
 #include <WiFi.h>
 
 #include "../../Debug/logger.h"
-#include "../../../include/secret.h"
+#include "../../../include/env.h"
 #include "../config/device_config.h"
 
 // speichert letzten Prüfzeitpunkt

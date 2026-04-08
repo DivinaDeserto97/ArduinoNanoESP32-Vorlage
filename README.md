@@ -44,7 +44,7 @@ Board: **Arduino Nano ESP32**
     ├── include/
     │   ├── pins.h              # zentrale Pin Definitionen
     │   ├── secretVorlage.h     # Vorlage der secret Version one daten
-    │   ├── secret.h            # WLAN + Geräte ID
+    │   ├── env.h            # WLAN + Geräte ID
     │   └── system_state.h      # Systemweite Variablen
     │
     ├── src/
@@ -178,7 +178,7 @@ Die Startseite zeigt eine kleine **Geräte‑Dashboardseite**:
 
 Datei:
 
-    include/secret.h
+    include/env.h
 
 Beispiel:
 
@@ -233,7 +233,7 @@ Beispiel API Erweiterungen:
 
 Empfehlungen:
 
--   `secret.h` in `.gitignore`
+-   `env.h` in `.gitignore`
 -   API optional mit Token schützen
 -   getrennte Gäste‑WLAN Geräte
 
